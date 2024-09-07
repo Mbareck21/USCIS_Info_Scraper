@@ -1,10 +1,11 @@
 # database.py
+
 import sqlite3
 
 def create_table():
     """Creates the uscis_info table if it doesn't exist."""
 
-    conn = get_db_connection() 
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -24,10 +25,8 @@ def get_db_connection():
     """Establishes a connection to the SQLite database."""
 
     conn = sqlite3.connect('immigration.db')
-
-    conn.row_factory = sqlite3.Row  # This allows you to access columns by name
+    conn.row_factory = sqlite3.Row  
     return conn
 
-# Call this function when your app starts up
 if __name__ == "__main__":
     create_table()

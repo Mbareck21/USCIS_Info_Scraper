@@ -3,8 +3,6 @@
 import requests
 from bs4 import BeautifulSoup
 from database import get_db_connection
-import sqlite3
-
 
 def scrape_uscis_forms():
     url = 'https://www.uscis.gov/forms/all-forms'
@@ -13,21 +11,18 @@ def scrape_uscis_forms():
 
     soup = BeautifulSoup(response.content, 'html.parser')
 
-    # Find all form rows
     form_rows = soup.find_all('div', class_='views-row')
 
-    conn = get_db_connection() 
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     for row in form_rows:
-        # Extract form name
         form_name_element = row.find('div', class_='views-field-title').find('a')
         if form_name_element:
             form_name = form_name_element.text.strip()
         else:
             form_name = "N/A"
 
-        # Extract description
         description_element = row.find('div', class_='views-field-body').find('div')
         if description_element:
             description = description_element.text.strip()

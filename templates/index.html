@@ -17,8 +17,7 @@
       <div
         id="chat-window"
         class="h-96 overflow-y-auto mb-4 p-4 border rounded-lg"
-      >
-      </div>
+      ></div>
       <form id="chat-form">
         <div class="flex">
           <input
@@ -41,31 +40,62 @@
       const userInput = document.getElementById("user-input");
       const chatForm = document.getElementById("chat-form");
 
+      let awaitingCategorySelection = false; // Flag to track category selection state
+
       chatForm.addEventListener("submit", (event) => {
-        event.preventDefault(); // Prevent default form submission behavior
+        event.preventDefault();
 
         const userMessage = userInput.value;
-        userInput.value = ""; // Clear the input field
+        userInput.value = "";
 
-        // Display user message
-        displayMessage("user", userMessage);
+        if (awaitingCategorySelection) {
+          handleCategorySelection(userMessage);
+        } else {
+          sendMessageToChatbot(userMessage);
+        }
+      });
 
-        // Send message to Flask backend using AJAX
+      function sendMessageToChatbot(message) {
+        displayMessage("user", message);
+
         fetch("/chatbot", {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
           body: new URLSearchParams({
-            query: userMessage,
+            query: message,
           }),
         })
           .then((response) => response.text())
           .then((botResponse) => {
-            // Display bot response
-            displayMessage("bot", botResponse);
+            if (botResponse.startsWith("Please select a category:")) {
+              awaitingCategorySelection = true;
+              displayCategoryPrompt(botResponse);
+            } else {
+              displayMessage("bot", botResponse);
+            }
           });
-      });
+      }
+
+      function handleCategorySelection(selectedCategory) {
+        awaitingCategorySelection = false;
+        sendMessageToChatbot(selectedCategory); // Send the selected category back to the chatbot
+      }
+
+      function displayCategoryPrompt(promptText) {
+        const promptElement = document.createElement("div");
+        promptElement.classList.add(
+          "bg-gray-200",
+          "text-gray-800",
+          "p-2",
+          "rounded-lg",
+          "mb-2"
+        );
+        promptElement.innerHTML = promptText.replace(/\n/g, "<br>"); // Replace newlines with <br> for line breaks
+        chatWindow.appendChild(promptElement);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
 
       function displayMessage(sender, message) {
         const messageElement = document.createElement("div");
@@ -83,8 +113,6 @@
 
         messageElement.textContent = message;
         chatWindow.appendChild(messageElement);
-
-        // Scroll to the bottom
         chatWindow.scrollTop = chatWindow.scrollHeight;
       }
     </script>
