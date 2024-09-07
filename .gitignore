@@ -1,9 +1,9 @@
 # General Python files
-__pycache__
+__pycache__/
 *.py[cod]
 
 # Database file
-immigration.db
+immigration.db/
 
 # Virtual environments
 venv/
