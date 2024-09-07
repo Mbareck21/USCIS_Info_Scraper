@@ -1,0 +1,17 @@
+# General Python files
+__pycache__/
+*.py[cod]
+
+# Database file
+immigration.db
+
+# Virtual environments
+venv/
+env/
+
+# IDE or editor-specific files
+.idea/
+.vscode/
+
+# Project-specific generated files (adjust if needed)
+*.log
